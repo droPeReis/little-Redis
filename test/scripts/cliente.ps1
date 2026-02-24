@@ -1,21 +1,23 @@
 param(
-    [string]$Host = "127.0.0.1",
-    [int]$Port = 6380
+    [string]$RedisHost = "127.0.0.1",
+    [int]$RedisPort = 6380
 )
 
 function Send-Command {
     param([string]$cmd)
 
-    $client = New-Object System.Net.Sockets.TcpClient($Host, $Port)
+    $client = New-Object System.Net.Sockets.TcpClient($RedisHost, $RedisPort)
     $stream = $client.GetStream()
     $writer = New-Object System.IO.StreamWriter($stream)
-    $reader = New-Object System.IO.StreamReader($stream)
 
     $writer.WriteLine($cmd)
     $writer.Flush()
 
-    Start-Sleep -Milliseconds 100
-    $response = $reader.ReadLine()
+    Start-Sleep -Milliseconds 200
+
+    $bytes = New-Object byte[] 4096
+    $count = $stream.Read($bytes, 0, $bytes.Length)
+    $response = [System.Text.Encoding]::UTF8.GetString($bytes, 0, $count)
 
     $writer.Close()
     $client.Close()
@@ -23,14 +25,13 @@ function Send-Command {
     return $response
 }
 
-# Modo interativo
 Write-Host "Mini-Redis PowerShell Client" -ForegroundColor Green
-Write-Host "Conectado em ${Host}:${Port}" -ForegroundColor Cyan
+Write-Host "Conectado em ${RedisHost}:${RedisPort}" -ForegroundColor Cyan
 Write-Host "Digite 'sair' para encerrar`n"
 
 while ($true) {
-    $input = Read-Host "redis"
-    if ($input -eq "sair") { break }
-    $result = Send-Command $input
+    $cmd = Read-Host "redis"
+    if ($cmd -eq "sair") { break }
+    $result = Send-Command $cmd
     Write-Host $result -ForegroundColor Yellow
 }

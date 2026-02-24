@@ -1,0 +1,43 @@
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+**2. Você cai num prompt interativo:**
+```
+Mini-Redis PowerShell Client
+Conectado em 127.0.0.1:6380
+Digite 'sair' para encerrar
+
+redis> PING
++PONG
+
+redis> SET nome Claude
++OK
+
+redis> GET nome
+$6
+
+redis> INCR visitas
+:1
+
+redis> EXPIRE nome 30
+:1
+
+redis> TTL nome
+:29
+
+redis> LPUSH fila a b c
+:3
+
+redis> LRANGE fila 0 -1
+*3
+
+redis> HSET user nome Ana
+:1
+
+redis> HGET user nome
+$3
+
+redis> FLUSHALL
++OK
+
+redis> sair

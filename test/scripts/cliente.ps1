@@ -25,13 +25,12 @@ function Send-Command {
     return $response
 }
 
-Write-Host "Mini-Redis PowerShell Client" -ForegroundColor Green
 Write-Host "Conectado em ${RedisHost}:${RedisPort}" -ForegroundColor Cyan
-Write-Host "Digite 'sair' para encerrar`n"
+Write-Host "Digitar 'exit' para encerrar`n"
 
 while ($true) {
     $cmd = Read-Host "redis"
-    if ($cmd -eq "sair") { break }
+    if ($cmd -eq "exit") { break }
     $result = Send-Command $cmd
     Write-Host $result -ForegroundColor Yellow
 }

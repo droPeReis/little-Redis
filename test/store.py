@@ -7,11 +7,7 @@ class MemoryStore:
         self._data: dict = {}
         self._expires: dict = {}
         self._lock = threading.RLock()
-
-        # Inicia o worker de limpeza de chaves expiradas
         self._start_cleanup_worker()
-
-    # ── Internos ────────────────────────────────────────────
 
     def _is_expired(self, key: str) -> bool:
         exp = self._expires.get(key)
@@ -25,7 +21,6 @@ class MemoryStore:
         return False
 
     def _start_cleanup_worker(self):
-        """Remove chaves expiradas a cada segundo (lazy + active expiry)."""
         def cleanup():
             while True:
                 time.sleep(1)
@@ -42,7 +37,6 @@ class MemoryStore:
         self._delete_if_expired(key)
         return self._data.get(key)
 
-    # ── Strings ─────────────────────────────────────────────
 
     def set(self, key: str, value: str, ex: int = None):
         with self._lock:
@@ -86,10 +80,10 @@ class MemoryStore:
     def ttl(self, key: str) -> int:
         with self._lock:
             if self._get_live(key) is None:
-                return -2  # chave não existe
+                return -2  
             exp = self._expires.get(key)
             if exp is None:
-                return -1  # sem expiração
+                return -1 
             return max(0, int(exp - time.time()))
 
     def incr(self, key: str) -> int:
@@ -101,7 +95,6 @@ class MemoryStore:
             self._data[key] = str(new_val)
             return new_val
 
-    # ── Listas ──────────────────────────────────────────────
 
     def lpush(self, key: str, *values) -> int:
         with self._lock:
@@ -133,7 +126,6 @@ class MemoryStore:
                 return []
             if not isinstance(lst, list):
                 raise TypeError("WRONGTYPE")
-            # Redis: stop -1 = até o fim
             if stop == -1:
                 return lst[start:]
             return lst[start:stop + 1]
@@ -142,8 +134,6 @@ class MemoryStore:
         with self._lock:
             lst = self._get_live(key) or []
             return len(lst)
-
-    # ── Hashes ──────────────────────────────────────────────
 
     def hset(self, key: str, field: str, value: str) -> int:
         with self._lock:
@@ -181,8 +171,6 @@ class MemoryStore:
             count = sum(1 for f in fields if h.pop(f, None) is not None)
             return count
 
-    # ── Utilitários ─────────────────────────────────────────
-
     def keys(self, pattern: str = "*") -> list:
         import fnmatch
         with self._lock:
@@ -194,3 +182,33 @@ class MemoryStore:
             self._data.clear()
             self._expires.clear()
         return "OK"
+    
+
+
+    ''' 
+    
+    def ttl(self, key: str) -> int:
+        with self._lock:
+            if self._get_live(key) is None:     
+                return -2   # COM EXPIRACAO ATIVA
+            exp = self._expires.get(key)
+            if exp is None:
+                return -1  # SEM EXPIRACOA
+            return max(0, int(exp - time.time()))
+
+    
+    
+    
+    def lrange(self, key: str, start: int, stop: int) -> list:
+        with self._lock:
+            lst = self._get_live(key)
+            if lst is None:
+                return []
+            if not isinstance(lst, list):
+                raise TypeError("WRONGTYPE")
+            # Redis: stop -1 = até o fim
+            if stop == -1:
+                return lst[start:]
+            return lst[start:stop + 1]
+    
+    '''

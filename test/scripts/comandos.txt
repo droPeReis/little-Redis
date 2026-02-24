@@ -1,12 +1,3 @@
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-```
-
-**2. Você cai num prompt interativo:**
-```
-Mini-Redis PowerShell Client
-Conectado em 127.0.0.1:6380
-Digite 'sair' para encerrar
-
 redis> PING
 +PONG
 

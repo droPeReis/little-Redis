@@ -2,8 +2,8 @@ import socket
 import threading
 from commands import handle_command
 
-HOST = "127.0.0.1"
-PORT = 6380  # Porta diferente do Redis real (6379)
+HOST = "127.0.0.1" 
+PORT = 6380  
 
 def handle_client(conn, addr):
     print(f"[+] Conexão de {addr}")
@@ -24,7 +24,7 @@ def main():
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT))
         s.listen()
-        print(f"🟢 Mini-Redis rodando em {HOST}:{PORT}")
+        print(f"🟢 little-Redis rodando em {HOST}:{PORT}")
         while True:
             conn, addr = s.accept()
             threading.Thread(target=handle_client, args=(conn, addr), daemon=True).start()
